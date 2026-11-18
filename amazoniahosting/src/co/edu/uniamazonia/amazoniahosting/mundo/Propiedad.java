@@ -2,48 +2,68 @@ package co.edu.uniamazonia.amazoniahosting.mundo;
 
 public class Propiedad {
 
-    private static int contadorPropiedad = 1;
     private String idPropiedad;
     private String ubicacionPropiedad;
     private String descripcionPropiedad;
+    private long precio;
+    private boolean estadoDisponibilidad;
     private TipoPropiedad tipoPropiedad;
-    private Usuario propietario;
-    private Disponibilidad disponibilidad;
 
-    public Propiedad(String ubicacionPropiedad, String descripcionPropiedad, TipoPropiedad tipoPropiedad, Usuario propietario, Disponibilidad disponibilidad) {
-        this.idPropiedad = "PROP-" + contadorPropiedad++;
-        this.ubicacionPropiedad = ubicacionPropiedad;
-        this.descripcionPropiedad = descripcionPropiedad;
+    public Propiedad(String idPropiedad, String ubicacionPropiedad, String descripcionPropiedad,
+            long precio, boolean estadoDisponibilidad) {
+        this(idPropiedad, ubicacionPropiedad, descripcionPropiedad, precio, estadoDisponibilidad, null);
+    }
+
+    public Propiedad(String idPropiedad, String ubicacionPropiedad, String descripcionPropiedad,
+            long precio, boolean estadoDisponibilidad, TipoPropiedad tipoPropiedad) {
+        this.idPropiedad = exigirTexto(idPropiedad, "El id de la propiedad");
+        this.ubicacionPropiedad = exigirTexto(ubicacionPropiedad, "La ubicacion");
+        this.descripcionPropiedad = exigirTexto(descripcionPropiedad, "La descripcion");
+        this.precio = exigirPrecio(precio);
+        this.estadoDisponibilidad = estadoDisponibilidad;
         this.tipoPropiedad = tipoPropiedad;
-        this.propietario = propietario;
-        this.disponibilidad = disponibilidad;
     }
 
-    public Propiedad() {
-        this.idPropiedad = "PROP-" + contadorPropiedad++;
-        this.ubicacionPropiedad = "";
-        this.descripcionPropiedad = "";
-        this.tipoPropiedad = null;
-        this.propietario = null;
-        this.disponibilidad = null;
-    }
-
-    //Metodos de Negocio
-    public void consultarPropiedad() {
-        System.out.println("ID Propiedad:   " + this.idPropiedad);
-        System.out.println("Ubicación:      " + this.ubicacionPropiedad);
-        System.out.println("Descripción:    " + this.descripcionPropiedad);
-        System.out.println("Tipo:           " + this.tipoPropiedad);
-        System.out.println("Propietario:    " + propietario.getNombreUsuario());
+    public String consultarPropiedad() {
+        return "ID: " + idPropiedad
+                + " | Tipo: " + (tipoPropiedad == null ? "SIN TIPO" : tipoPropiedad)
+                + " | Ubicacion: " + ubicacionPropiedad
+                + " | Descripcion: " + descripcionPropiedad
+                + " | Precio: " + precio
+                + " | " + (estadoDisponibilidad ? "Disponible" : "No disponible");
     }
 
     public void actualizarDatos(String nuevaUbicacion, String nuevaDescripcion) {
-        this.ubicacionPropiedad = nuevaUbicacion;
-        this.descripcionPropiedad = nuevaDescripcion;
-        System.out.println("¡Propiedad " + this.idPropiedad + " actualizada con éxito!");
+        String ubicacion = exigirTexto(nuevaUbicacion, "La ubicacion");
+        String descripcion = exigirTexto(nuevaDescripcion, "La descripcion");
+        this.ubicacionPropiedad = ubicacion;
+        this.descripcionPropiedad = descripcion;
     }
 
-    //Declaracion de Metodos Getters y Setters
+    public boolean consultarDisponibilidad() {
+        return estadoDisponibilidad;
+    }
+
+    /** RF-06: unica via para cambiar estado y precio, validando el precio. */
+    public void actualizarDisponibilidad(boolean nuevoEstado, long nuevoPrecio) {
+        this.precio = exigirPrecio(nuevoPrecio);
+        this.estadoDisponibilidad = nuevoEstado;
+    }
+
+    private static String exigirTexto(String valor, String campo) {
+        if (valor == null || valor.trim().isEmpty()) {
+            throw new IllegalArgumentException(campo + " no puede estar vacio.");
+        }
+        return valor.trim();
+    }
+
+    private static long exigirPrecio(long valor) {
+        if (valor <= 0) {
+            throw new IllegalArgumentException("El precio debe ser mayor que cero.");
+        }
+        return valor;
+    }
+
     public String getIdPropiedad() {
         return idPropiedad;
     }
@@ -56,40 +76,39 @@ public class Propiedad {
         return descripcionPropiedad;
     }
 
+    public long getPrecio() {
+        return precio;
+    }
+
+    public boolean isEstadoDisponibilidad() {
+        return estadoDisponibilidad;
+    }
+
     public TipoPropiedad getTipoPropiedad() {
         return tipoPropiedad;
     }
 
-    public Usuario getPropietario() {
-        return propietario;
-    }
-
-    public Disponibilidad getDisponibilidad() {
-        return disponibilidad;
-    }
-
     public void setIdPropiedad(String idPropiedad) {
-        this.idPropiedad = idPropiedad;
+        this.idPropiedad = exigirTexto(idPropiedad, "El id de la propiedad");
     }
 
     public void setUbicacionPropiedad(String ubicacionPropiedad) {
-        this.ubicacionPropiedad = ubicacionPropiedad;
+        this.ubicacionPropiedad = exigirTexto(ubicacionPropiedad, "La ubicacion");
     }
 
     public void setDescripcionPropiedad(String descripcionPropiedad) {
-        this.descripcionPropiedad = descripcionPropiedad;
+        this.descripcionPropiedad = exigirTexto(descripcionPropiedad, "La descripcion");
+    }
+
+    public void setPrecio(long precio) {
+        this.precio = exigirPrecio(precio);
+    }
+
+    public void setEstadoDisponibilidad(boolean estadoDisponibilidad) {
+        this.estadoDisponibilidad = estadoDisponibilidad;
     }
 
     public void setTipoPropiedad(TipoPropiedad tipoPropiedad) {
         this.tipoPropiedad = tipoPropiedad;
     }
-
-    public void setPropietario(Usuario propietario) {
-        this.propietario = propietario;
-    }
-
-    public void setDisponibilidad(Disponibilidad disponibilidad) {
-        this.disponibilidad = disponibilidad;
-    }
-
 }
